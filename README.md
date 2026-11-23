@@ -198,7 +198,7 @@ if (pasoActual !== ultimoPaso) {
 ```
 
 ## Resultado:
-  ![Demo](src/Demo.png)
+  ![Demo](src/result.png)
 
 ## Uso IA
 
