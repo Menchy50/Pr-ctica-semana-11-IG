@@ -197,9 +197,9 @@ if (pasoActual !== ultimoPaso) {
 }
 ```
 
-* **Resultado:**
+## Resultado:
   ![Demo](src/result.png)
 
-* **Uso IA**
+## Uso IA**
 
 La IA en este trabajo principalmente se utilizó para mejorar el código a la hora de su legibilidad. En los aspectos utilizados son en la caída, subida de los bloques y además a la hora de poder hacer el salto con un tween único.
