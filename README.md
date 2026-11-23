@@ -10,7 +10,6 @@ Este proyecto implementa una escena interactiva 3D con **Three.js**, **Ammo.js**
 Para formar el anillo, se colocó el primer rectángulo y, manteniendo una separación equidistante entre cada uno, se calcularon secuencialmente las posiciones y rotaciones del resto. La esfera (`circulo`) se ubicó inicialmente sobre la primera plataforma.
 
 ```javascript
-// Creación y posicionamiento del anillo de rectángulos
 rectangulos.push(Cubo(13.0, 0.5, -3.5, 4, 1, 2, 0, -180, 0, 0));
 rectangulos.push(Cubo(12.0, 0.5,  0.0, 4, 1, 2, 0, -210, 0, 0));
 rectangulos.push(Cubo(9.0,  0.5,  2.5, 4, 1, 2, 0, -240, 0, 0));
@@ -24,7 +23,6 @@ rectangulos.push(Cubo(6.5,  0.5, -11.5,4, 1, 2, 0,  -90, 0, 0));
 rectangulos.push(Cubo(10.0, 0.5, -10.0,4, 1, 2, 0, -120, 0, 0));
 rectangulos.push(Cubo(12.5, 0.5, -7.0, 4, 1, 2, 0, -150, 0, 0));
 
-// Posicionamiento de la esfera justo encima del primer rectángulo
 circulo = Circulo(13.3, 2.5, -3.5, 1.5, 16, 16, 0xffaa00, 0);
 ```
 
@@ -80,14 +78,13 @@ function soltarRectangulo(mesh) {
   const body = mesh.userData.physicsBody;
   if (!body) return;
 
-  // Remoción e inserción para actualizar el estado físico en Ammo.js
   physicsWorld.removeRigidBody(body);
 
   const masa = 2;
   const localInertia = new Ammo.btVector3(0, 0, 0);
   body.getCollisionShape().calculateLocalInertia(masa, localInertia);
 
-  body.setCollisionFlags(0); // 0 = Cuerpo dinámico normal
+  body.setCollisionFlags(0);
   body.setMassProps(masa, localInertia);
   body.updateInertiaTensor();
 
@@ -120,12 +117,11 @@ function subirRectangulo(mesh) {
     body.setLinearVelocity(zero);
     body.setAngularVelocity(zero);
     body.setMassProps(0, zero);
-    body.setCollisionFlags(1); // 1 = Objeto Estático
+    body.setCollisionFlags(1);
 
     physicsWorld.addRigidBody(body);
   }
 
-  // Posicionamos el punto de partida y restablecemos rotación
   mesh.quaternion.set(
     mesh.userData.rotInicial.x,
     mesh.userData.rotInicial.y,
@@ -172,7 +168,6 @@ function subirRectangulo(mesh) {
 Para pasar de materiales planos (`MeshBasicMaterial`) a volúmenes 3D realistas, se incorporaron fuentes de luz en la función `init()` y se migró el material de la esfera a `MeshStandardMaterial`.
 
 ```javascript
-// Iluminación ambiental y direccional añadida en init()
 const luzAmbiental = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(luzAmbiental);
 
@@ -180,7 +175,6 @@ const luzDireccional = new THREE.DirectionalLight(0xffffff, 1);
 luzDireccional.position.set(10, 20, 10);
 scene.add(luzDireccional);
 
-// Material sensible a luces en Circulo()
 let material = new THREE.MeshStandardMaterial({
   color: col,
 });
@@ -192,16 +186,20 @@ let material = new THREE.MeshStandardMaterial({
 Para aportar dinamismo visual, la esfera cambia su color a una tonalidad aleatoria cada vez que efectúa un nuevo salto (`pasoActual` avanza).
 
 ```javascript
-// Variable de control global
 let ultimoPaso = -1;
 
-// Dentro del bucle animationLoop(timestamp):
 const pasoActual = Math.floor(segundos / duracionCiclo);
 
 if (pasoActual !== ultimoPaso) {
   ultimoPaso = pasoActual;
 
-  // Asignación de un color aleatorio a la esfera
   circulo.material.color.setHex(Math.random() * 0xffffff);
 }
 ```
+
+* **Resultado:**
+  ![Demo](src/result.png)
+
+* **Uso IA**
+
+La IA en este trabajo principalmente se utilizó para mejorar el código a la hora de su legibilidad. En los aspectos utilizados son en la caída, subida de los bloques y además a la hora de poder hacer el salto con un tween único.
