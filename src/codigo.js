@@ -1,8 +1,9 @@
 import * as THREE from "three";
 import * as TWEEN from "@tweenjs/tween.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import AmmoLib from "ammojs-typed";
 
-let scene, renderer, camera;
+let scene, renderer, camera, camcontrols;
 let Ammo, physicsWorld, transformAux1;
 let objetos = [];
 let rectangulos = [];
@@ -43,7 +44,7 @@ function init() {
   const luzDireccional = new THREE.DirectionalLight(0xffffff, 1);
   luzDireccional.position.set(10, 20, 10);
   scene.add(luzDireccional);
-  
+
   camera = new THREE.PerspectiveCamera(
     75,
     window.innerWidth / window.innerHeight,
@@ -51,11 +52,14 @@ function init() {
     1000
   );
   camera.position.set(5, 7, 15);
-  camera.lookAt(6, 0, -4);
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
+
+  camcontrols = new OrbitControls(camera, renderer.domElement);
+  camcontrols.target.set(6, 0, -4);
+  camcontrols.update();
 
   rectangulos.push(Cubo(13.0, 0.5, -3.5, 4, 1, 2, 0, -180, 0, 0));
   rectangulos.push(Cubo(12.0, 0.5,  0.0, 4, 1, 2, 0, -210, 0, 0));
@@ -197,28 +201,6 @@ function soltarRectangulo(mesh) {
   body.setCollisionFlags(0);
   body.setMassProps(masa, localInertia);
   body.updateInertiaTensor();
-  body.clearForces();
-
-  physicsWorld.addRigidBody(body);
-  body.activate(true);
-}
-
-function soltarRectangulo(mesh) {
-  if (!mesh || mesh.userData.cayendo || mesh.userData.subiendo) return;
-  mesh.userData.cayendo = true;
-
-  const body = mesh.userData.physicsBody;
-  if (!body) return;
-
-  physicsWorld.removeRigidBody(body);
-
-  const masa = 2;
-  const localInertia = new Ammo.btVector3(0, 0, 0);
-  body.getCollisionShape().calculateLocalInertia(masa, localInertia);
-
-  body.setCollisionFlags(0);
-  body.setMassProps(masa, localInertia);
-  body.updateInertiaTensor();
 
   physicsWorld.addRigidBody(body);
   body.activate(true);
@@ -305,9 +287,9 @@ function animationLoop(timestamp) {
 
     if (pasoActual !== ultimoPaso) {
       ultimoPaso = pasoActual;
-
       circulo.material.color.setHex(Math.random() * 0xffffff);
     }
+
     const tiempoEnCiclo = segundos % duracionCiclo;
     const progresoSalto = Math.min(tiempoEnCiclo / tiempoSalto, 1.0);
 
@@ -351,6 +333,7 @@ function animationLoop(timestamp) {
     }
   }
 
+  camcontrols.update();
   TWEEN.update();
   renderer.render(scene, camera);
 }
